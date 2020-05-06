@@ -1,0 +1,44 @@
+
+<#assign typewriterVersion="${project.version}" openHtmlToPdfVersion="${openhtml.version}" flexmarkVersion="${flexmark.version}" freemarkerVersion="${freemarker.version}">
+
+<#macro example>
+<div class="example">
+<@markdown>
+#### Beispiel
+</@markdown>
+
+<blockquote>
+<#nested>
+</blockquote>
+</div>
+</#macro>
+
+<#macro formula>
+<div class="formula">
+<@markdown>
+<#nested>
+</@markdown>
+</div>
+</#macro>
+
+<#macro segment class>
+<div class="${class}">
+<@markdown>
+<#nested>
+</@markdown>
+</div>
+</#macro>
+
+<#macro cover>
+<div style="height:297mm">
+<div class="cover">
+<@markdown>
+<#nested>
+</@markdown>
+</div>
+</div>
+</#macro>
+
+<#macro pagebreak>
+<div style="page-break-after: always"/>
+</#macro>

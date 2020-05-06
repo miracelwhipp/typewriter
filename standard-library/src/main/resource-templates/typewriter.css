@@ -1,0 +1,14 @@
+
+.example {
+    color: rgb(128,128,128)
+}
+
+.formula {
+    text-align: center;
+    background-color: rgb(0, 204, 255)
+}
+
+.cover {
+    text-align: center;
+    page-break-after: always;
+}
