@@ -9,6 +9,7 @@ import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer;
 import io.github.miracelwhipp.typewriter.font.FontDescription;
+import io.github.miracelwhipp.typewriter.spi.Monitor;
 import io.github.miracelwhipp.typewriter.spi.util.ModifiedFiles;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 @Mojo(name = "pdf", defaultPhase = LifecyclePhase.COMPILE)
 public class HtmlToPdfMojo extends AbstractTypewriterMojo {
@@ -61,8 +63,12 @@ public class HtmlToPdfMojo extends AbstractTypewriterMojo {
                         builder.useFont(fontDescription.getLocation(), fontDescription.getFamily());
                     });
 
-                    // TODO: implement DOM Mutator to feed information after preprocessing
-                    //  bsp table-of-contents
+                    List<Monitor> monitors = SensorRegistry.INSTANCE.getSensors(source.toFile());
+
+                    monitors.forEach(sensor -> {
+
+                        builder.addDOMMutator(new ElementConverterDomMutator(sensor.newEvaluator()));
+                    });
 
                     builder.useFastMode()
                             .useUnicodeBidiSplitter(new ICUBidiSplitter.ICUBidiSplitterFactory())

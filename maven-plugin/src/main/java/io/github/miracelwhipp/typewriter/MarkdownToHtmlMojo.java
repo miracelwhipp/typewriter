@@ -1,22 +1,24 @@
 package io.github.miracelwhipp.typewriter;
 
+import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.ext.xwiki.macros.MacroExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-import io.github.miracelwhipp.typewriter.spi.util.ModifiedFiles;
 import io.github.miracelwhipp.typewriter.spi.CssProvider;
-import org.apache.commons.io.FilenameUtils;
+import io.github.miracelwhipp.typewriter.spi.util.ModifiedFiles;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.ServiceLoader;
 
 @Mojo(name = "html", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
@@ -39,11 +41,11 @@ public class MarkdownToHtmlMojo extends AbstractTypewriterMojo {
             MutableDataSet options = new MutableDataSet();
 
             //TODO: check available options
-            //uncomment to set optional extensions
-            //options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), StrikethroughExtension.create()));
-
-            // uncomment to convert soft-breaks to hard breaks
-            //options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
+            options.set(Parser.EXTENSIONS, Arrays.asList(
+                    TablesExtension.create(),
+                    StrikethroughExtension.create(),
+                    MacroExtension.create()
+            ));
 
             Parser parser = Parser.builder(options).build();
             HtmlRenderer renderer = HtmlRenderer.builder(options).build();
@@ -63,7 +65,6 @@ public class MarkdownToHtmlMojo extends AbstractTypewriterMojo {
 
                         Node document = parser.parse(markdown);
 
-
                         StringBuilder html = new StringBuilder();
 
                         html.append(HTML_HEADER);
@@ -72,34 +73,7 @@ public class MarkdownToHtmlMojo extends AbstractTypewriterMojo {
 
                         html.append(defaultStyle);
 
-                        File defaultCssFileName = new File(htmlDirectory, defaultCssFile);
-                        getLog().debug("default css file is " + defaultCssFileName.getAbsolutePath());
-
-                        if (defaultCssFileName.isFile()) {
-
-                            Path relativePath = targetFile.getParent().relativize(defaultCssFileName.toPath());
-
-                            appendStyleSheetLink(html, relativePath.toString());
-                        }
-
-                        File localDefault = new File(targetFile.getParent().toFile(), defaultCssFile);
-                        getLog().debug("local default css file is " + localDefault.getAbsolutePath());
-
-                        if (localDefault.isFile() && !localDefault.equals(defaultCssFileName)) {
-
-                            appendStyleSheetLink(html, defaultCssFile);
-                        }
-
-                        File namedCssFile = new File(targetFile.getParent().toFile(),
-                                FilenameUtils.removeExtension(sourceFile.toFile().getName()) + "." + FileExtensions.CSS);
-                        getLog().debug("named css file is " + namedCssFile.getAbsolutePath());
-
-                        if (namedCssFile.isFile()) {
-
-                            appendStyleSheetLink(html, namedCssFile.getName());
-                        }
-
-                        html.append(HTML_OPEN_TITLE).append(FilenameUtils.removeExtension(sourceFile.toFile().getName())).append(HTML_CLOSE_HEAD);
+                        html.append(HTML_CLOSE_HEAD);
 
                         html.append(renderer.render(document));
 
@@ -146,8 +120,7 @@ public class MarkdownToHtmlMojo extends AbstractTypewriterMojo {
     }
 
     private static final String HTML_HEADER = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n<html>\n<head>\n";
-    private static final String HTML_OPEN_TITLE = "<title>";
-    private static final String HTML_CLOSE_HEAD = "</title>\n</head>\n<body>\n";
+    private static final String HTML_CLOSE_HEAD = "</head>\n<body>\n";
     private static final String HTML_FOOTER = "\n</body></html>";
     private static final String HTML_LINK_PREFIX = "<link rel=\"stylesheet\" type=\"text/css\" href=\"";
     private static final String HTML_LINK_SUFFIX = "\"/>\n";

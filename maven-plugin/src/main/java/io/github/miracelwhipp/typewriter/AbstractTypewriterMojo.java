@@ -33,9 +33,6 @@ public abstract class AbstractTypewriterMojo extends AbstractMojo {
     @Parameter(defaultValue = DEFAULT_SOURCE_ENCODING, property = "typewriter.source.encoding")
     private String sourceEncoding;
 
-    @Parameter(defaultValue = "default.css", property = "typewriter.default.css.file")
-    protected String defaultCssFile;
-
     public String getSourceEncoding() {
 
         if (StringUtils.isBlank(sourceEncoding) || sourceEncoding.equals(DEFAULT_SOURCE_ENCODING)) {

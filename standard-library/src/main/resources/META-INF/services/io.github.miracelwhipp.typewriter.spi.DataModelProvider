@@ -1,3 +1,7 @@
 io.github.miracelwhipp.typewriter.library.CompressionApi$Provider
 io.github.miracelwhipp.typewriter.library.TrueTypeApi$Provider
 io.github.miracelwhipp.typewriter.library.MarkdownDirective$Provider
+io.github.miracelwhipp.typewriter.library.DocumentStructureMonitor$Provider
+io.github.miracelwhipp.typewriter.library.BibliographyMonitor$Provider
+io.github.miracelwhipp.typewriter.library.StyleMonitor$Provider
+io.github.miracelwhipp.typewriter.library.TitleMonitor$Provider

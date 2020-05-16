@@ -8,6 +8,7 @@ import freemarker.template.TemplateException;
 import io.github.miracelwhipp.typewriter.freemarker.Configurations;
 import io.github.miracelwhipp.typewriter.freemarker.DataModel;
 import io.github.miracelwhipp.typewriter.freemarker.DataModelProviders;
+import io.github.miracelwhipp.typewriter.spi.Monitor;
 import io.github.miracelwhipp.typewriter.spi.util.ForEachFile;
 import io.github.miracelwhipp.typewriter.spi.util.ModifiedFiles;
 import io.github.miracelwhipp.typewriter.spi.DataModelProvider;
@@ -183,7 +184,30 @@ public class FreemarkerPreprocessingMojo extends AbstractTypewriterMojo {
 
         for (DataModelProvider provider : dataModelProviders) {
 
-            input.put(provider.name(), provider.getDataModel(customConfiguration, evaluationParameters));
+            Object model = provider.getDataModel(customConfiguration, evaluationParameters);
+
+            getLog().info("adding model " + model.getClass().getCanonicalName() + " from provider " + provider.getClass().getCanonicalName());
+
+            if (!(model instanceof Monitor)) {
+
+                input.put(provider.name(), model);
+
+            } else {
+
+                File registryKey = targetFile.toFile();
+
+                if (FileExtensions.MARKDOWN.equalsIgnoreCase(FilenameUtils.getExtension(targetFile.toString()))) {
+
+                    String htmlFilename = FilenameUtils.removeExtension(htmlDirectory.toPath().resolve(markdownDirectory.toPath().relativize(targetFile)).toString()) + "." + FileExtensions.HTML;
+                    registryKey = new File(htmlFilename);
+                }
+
+                Monitor monitor = (Monitor) model;
+
+                SensorRegistry.INSTANCE.register(registryKey, monitor);
+
+                input.put(provider.name(), monitor.newSensor());
+            }
         }
 
         Template template = configuration.getTemplate(sourceDirectory.relativize(sourceFile).toString());

@@ -2,7 +2,7 @@
 <#assign typewriterVersion="${project.version}" openHtmlToPdfVersion="${openhtml.version}" flexmarkVersion="${flexmark.version}" freemarkerVersion="${freemarker.version}">
 
 <#macro example>
-<div class="example">
+<div class="typewriter-example">
 <@markdown>
 #### Beispiel
 </@markdown>
@@ -14,7 +14,7 @@
 </#macro>
 
 <#macro formula>
-<div class="formula">
+<div class="typewriter-formula">
 <@markdown>
 <#nested>
 </@markdown>
@@ -30,15 +30,32 @@
 </#macro>
 
 <#macro cover>
-<div style="height:297mm">
-<div class="cover">
+<div class="typewriter-cover">
 <@markdown>
 <#nested>
 </@markdown>
-</div>
 </div>
 </#macro>
 
 <#macro pagebreak>
 <div style="page-break-after: always"/>
+</#macro>
+
+<#macro section sectionName>
+<section>
+${structure.enterSection(sectionName)}
+<h${[[structure.sectionDepth(), 6]?min, 1]?max}>${sectionName}</h${[[structure.sectionDepth(), 6]?min, 1]?max}>
+<@markdown>
+<#nested>
+</@markdown>
+${structure.leaveSection()}
+</section>
+</#macro>
+
+<#macro footnote>
+<span style="float: footnote">
+<#-- <@markdown> -->
+<#nested>
+<#-- </@markdown> -->
+</span>
 </#macro>
