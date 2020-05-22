@@ -16,11 +16,26 @@ public final class TemplateLoaders {
     private TemplateLoaders() {
     }
 
-    public static TemplateLoader build(Log log, File sourceDirectory) throws IOException {
+    public static TemplateLoader build(Log log, File... sourceDirectories) throws IOException {
 
         List<TemplateLoader> templateLoaders = new ArrayList<>(2);
 
-        templateLoaders.add(new FileTemplateLoader(sourceDirectory));
+        Arrays.stream(sourceDirectories).forEach(sourceDirectory -> {
+
+            try {
+
+                if (!sourceDirectory.isDirectory()) {
+
+                    return;
+                }
+
+                templateLoaders.add(new FileTemplateLoader(sourceDirectory));
+
+            } catch (IOException e) {
+
+                throw new WrappedCheckedException(e);
+            }
+        });
 
         StringTemplateLoader additionalTemplates = new StringTemplateLoader();
         templateLoaders.add(additionalTemplates);

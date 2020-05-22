@@ -13,6 +13,9 @@
                     <lifecycle>
                         <id>default</id>
                         <phases>
+                            <generate-sources>
+                                ${project.groupId}:${project.artifactId}:${project.version}:extract-twa
+                            </generate-sources>
                             <process-sources>
                                 ${project.groupId}:${project.artifactId}:${project.version}:preprocess
                             </process-sources>
@@ -43,6 +46,48 @@
                 <type>pdf</type>
                 <extension>pdf</extension>
                 <language>html</language>
+                <addedToClasspath>false</addedToClasspath>
+            </configuration>
+        </component>
+        <component>
+            <role>
+                org.apache.maven.lifecycle.mapping.LifecycleMapping
+            </role>
+            <role-hint>twa</role-hint>
+            <implementation>
+                org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+            </implementation>
+            <configuration>
+                <lifecycles>
+                    <lifecycle>
+                        <id>default</id>
+                        <phases>
+                            <generate-resources>
+                                org.apache.maven.plugins:maven-resources-plugin:resources
+                            </generate-resources>
+                            <package>
+                                org.apache.maven.plugins:maven-jar-plugin:jar
+                            </package>
+                            <install>
+                                org.apache.maven.plugins:maven-install-plugin:install
+                            </install>
+                            <deploy>
+                                org.apache.maven.plugins:maven-deploy-plugin:deploy
+                            </deploy>
+                        </phases>
+                    </lifecycle>
+                </lifecycles>
+            </configuration>
+        </component>
+        <component>
+            <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+            <role-hint>twa</role-hint>
+            <implementation>
+                org.apache.maven.artifact.handler.DefaultArtifactHandler
+            </implementation>
+            <configuration>
+                <type>twa</type>
+                <extension>twa</extension>
                 <addedToClasspath>false</addedToClasspath>
             </configuration>
         </component>

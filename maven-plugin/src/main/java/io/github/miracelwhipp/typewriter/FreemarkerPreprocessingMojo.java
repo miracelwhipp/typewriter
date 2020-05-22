@@ -64,7 +64,7 @@ public class FreemarkerPreprocessingMojo extends AbstractTypewriterMojo {
 
             Configuration configuration = Configurations.makeConfiguration();
 
-            TemplateLoader templateLoader = TemplateLoaders.build(getLog(), typewriterSourceDirectory);
+            TemplateLoader templateLoader = TemplateLoaders.build(getLog(), typewriterSourceDirectory, freemarkerIncludeDirectory);
             configuration.setTemplateLoader(templateLoader);
 
             Locale currentLocale = getLocale();

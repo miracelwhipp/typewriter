@@ -15,6 +15,9 @@ public abstract class AbstractTypewriterMojo extends AbstractMojo {
 
     private static final String DEFAULT_SOURCE_ENCODING = "${project.build.sourceEncoding}";
 
+    @Parameter(defaultValue = "${project.build.directory}/generated-sources/main/freemarker-include", property = "typewriter.freemarker.include.directory")
+    protected File freemarkerIncludeDirectory;
+
     @Parameter(defaultValue = "${project.build.directory}/generated-sources/main/md", property = "typewriter.processed.markdown.directory")
     protected File markdownDirectory;
 
