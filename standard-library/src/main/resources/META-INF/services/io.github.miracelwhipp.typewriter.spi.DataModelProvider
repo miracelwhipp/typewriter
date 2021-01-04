@@ -5,3 +5,4 @@ io.github.miracelwhipp.typewriter.library.DocumentStructureMonitor$Provider
 io.github.miracelwhipp.typewriter.library.BibliographyMonitor$Provider
 io.github.miracelwhipp.typewriter.library.StyleMonitor$Provider
 io.github.miracelwhipp.typewriter.library.TitleMonitor$Provider
+io.github.miracelwhipp.typewriter.library.HeadMonitor$Provider

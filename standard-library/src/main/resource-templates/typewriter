@@ -44,7 +44,7 @@
 <#macro section sectionName>
 <section>
 ${structure.enterSection(sectionName)}
-<h${[[structure.sectionDepth(), 6]?min, 1]?max}>${sectionName}</h${[[structure.sectionDepth(), 6]?min, 1]?max}>
+<h${[[structure.sectionDepth(), 6]?min, 1]?max} id="${structure.currentId()}">${sectionName}</h${[[structure.sectionDepth(), 6]?min, 1]?max}>
 <@markdown>
 <#nested>
 </@markdown>

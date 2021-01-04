@@ -1,4 +1,4 @@
-package io.github.miracelwhipp.typewriter.freemarker;
+package io.github.miracelwhipp.typewriter.conversion.freemarker;
 
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.configuration.PlexusConfiguration;

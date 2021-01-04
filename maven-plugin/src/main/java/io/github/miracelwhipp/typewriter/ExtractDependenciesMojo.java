@@ -45,7 +45,7 @@ public class ExtractDependenciesMojo extends AbstractTypewriterMojo {
         try {
             DefaultDependencyResolutionRequest request = new DefaultDependencyResolutionRequest();
 
-            request.setMavenProject(project);
+            request.setMavenProject(getProject());
 
             request.setRepositorySession(repoSession);
 
@@ -81,14 +81,14 @@ public class ExtractDependenciesMojo extends AbstractTypewriterMojo {
 
                 try {
 
-                    FileUtils.forceMkdir(freemarkerIncludeDirectory);
+                    FileUtils.forceMkdir(freemarkerIncludeDirectory());
 
                 } catch (IOException e) {
 
                     throw new WrappedCheckedException(e);
                 }
 
-                unArchiver.setDestDirectory(freemarkerIncludeDirectory);
+                unArchiver.setDestDirectory(freemarkerIncludeDirectory());
                 unArchiver.setSourceFile(dependency.getArtifact().getFile().getAbsoluteFile());
                 unArchiver.setFileSelectors(new FileSelector[]{new FileSelector() {
 

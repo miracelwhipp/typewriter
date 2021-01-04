@@ -35,7 +35,7 @@ public class CompressionApi {
 
         Path targetFile = outputDirectory.resolve(selector);
 
-        if (targetFile.toFile().isFile()) {
+        if (!targetFile.toFile().isDirectory()) {
 
             boolean found = false;
 

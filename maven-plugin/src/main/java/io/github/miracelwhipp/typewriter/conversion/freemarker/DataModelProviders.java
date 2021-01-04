@@ -1,4 +1,4 @@
-package io.github.miracelwhipp.typewriter.freemarker;
+package io.github.miracelwhipp.typewriter.conversion.freemarker;
 
 import io.github.miracelwhipp.typewriter.spi.DataModelProvider;
 

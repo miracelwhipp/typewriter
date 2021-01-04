@@ -15,15 +15,13 @@ import java.util.Stack;
 public class DocumentStructureMonitor implements Monitor {
 
 
-    private final Tree<String> root = new Tree<>("<root>");
+    private final Tree<SectionDescriptor> root = new Tree<>(new SectionDescriptor("<root>", "section"));
 
-    private final Stack<Tree<String>> sections = new Stack<Tree<String>>() {
+    private final Stack<Tree<SectionDescriptor>> sections = new Stack<Tree<SectionDescriptor>>() {
         {
             push(root);
         }
     };
-
-    private Tree<String> sectionTree;
 
     @Override
     public Object newSensor() {
@@ -35,24 +33,21 @@ public class DocumentStructureMonitor implements Monitor {
         return new DocumentStructureEvaluator();
     }
 
-    public Tree<String> getSectionTree() {
-        return sectionTree;
-    }
-
-
     public class DocumentStructureSensor {
 
         public void enterSection(String title) {
 
-            Tree<String> newSection = new Tree<>(title);
 
             if (sections.empty()) {
 
-                sections.push(newSection);
+                sections.push(new Tree<>(new SectionDescriptor(title, "section")));
                 return;
             }
 
-            Tree<String> currentSection = sections.peek();
+            Tree<SectionDescriptor> currentSection = sections.peek();
+
+            Tree<SectionDescriptor> newSection = new Tree<>(new SectionDescriptor(title, currentSection.getData().getIdentifier() + "." + (currentSection.getChildren().size() + 1)));
+
             currentSection.getChildren().add(newSection);
             sections.push(newSection);
         }
@@ -64,13 +59,19 @@ public class DocumentStructureMonitor implements Monitor {
                 return;
             }
 
-            sectionTree = sections.pop();
+            sections.pop();
         }
 
         public int sectionDepth() {
 
             return sections.size();
         }
+
+        public String currentId() {
+
+            return sections.peek().getData().getIdentifier();
+        }
+
     }
 
 
@@ -84,45 +85,39 @@ public class DocumentStructureMonitor implements Monitor {
         @Override
         public Element convert(Element node) {
 
-//            Tree<String> sectionTree = getSectionTree();
+            boolean ordered = Boolean.parseBoolean(node.getAttribute("ordered"));
 
             Document document = node.getOwnerDocument();
 
             Element container = document.createElement("div");
             container.setAttribute("class", "typewriter-table-of-contents");
 
-//            if (sectionTree == null) {
-//
-//                return container;
-//            }
-
-            Element list = document.createElement("ol");
+            Element list = document.createElement(ordered ? "ol" : "ul");
             container.appendChild(list);
-
-//            if (sectionTree != root) {
-//
-//                throw new IllegalStateException("creating table of contents when document is not fully preprocessed");
-//            }
 
             root.getChildren().forEach(child -> {
 
-                list.appendChild(convert(document, child));
+                list.appendChild(convert(ordered, document, child));
             });
 
             return container;
         }
 
-        private Element convert(Document document, Tree<String> tree) {
+        private Element convert(boolean ordered, Document document, Tree<SectionDescriptor> tree) {
 
             Element listIndex = document.createElement("li");
-            listIndex.setTextContent(tree.getData());
+            Element link = document.createElement("a");
 
-            Element subList = document.createElement("ol");
+            link.setAttribute("href", "#" + tree.getData().getIdentifier());
+            link.setTextContent(tree.getData().getTitle());
+            listIndex.appendChild(link);
+
+            Element subList = document.createElement(ordered ? "ol" : "ul");
             listIndex.appendChild(subList);
 
             tree.getChildren().forEach(child -> {
 
-                subList.appendChild(convert(document, child));
+                subList.appendChild(convert(ordered, document, child));
             });
 
             return listIndex;

@@ -1,4 +1,4 @@
-package io.github.miracelwhipp.typewriter.freemarker;
+package io.github.miracelwhipp.typewriter.conversion.freemarker;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;

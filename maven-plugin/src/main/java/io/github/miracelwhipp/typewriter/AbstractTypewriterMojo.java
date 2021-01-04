@@ -1,63 +1,88 @@
 package io.github.miracelwhipp.typewriter;
 
+import com.google.common.base.Strings;
+import io.github.miracelwhipp.typewriter.conversion.System;
+import io.github.miracelwhipp.typewriter.conversion.freemarker.FreemarkerConfiguration;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.*;
 
-public abstract class AbstractTypewriterMojo extends AbstractMojo {
+public abstract class AbstractTypewriterMojo extends AbstractMojo implements FreemarkerConfiguration, System {
 
+
+    public static final String DEFAULT_SOURCE_DIRECTORY = "${project.basedir}/src/main/typewriter";
 
     private static final String DEFAULT_SOURCE_ENCODING = "${project.build.sourceEncoding}";
 
     @Parameter(defaultValue = "${project.build.directory}/generated-sources/main/freemarker-include", property = "typewriter.freemarker.include.directory")
-    protected File freemarkerIncludeDirectory;
+    private File freemarkerIncludeDirectory;
 
-    @Parameter(defaultValue = "${project.build.directory}/generated-sources/main/md", property = "typewriter.processed.markdown.directory")
-    protected File markdownDirectory;
+    @Parameter
+    private PlexusConfiguration dataModel;
 
-    @Parameter(defaultValue = "${project.build.directory}/generated-sources/main/html", property = "typewriter.processed.html.directory")
-    protected File htmlDirectory;
+    @Parameter
+    private Map<String, String> customConfiguration = new HashMap<>();
 
-    @Parameter(defaultValue = "${project.build.directory}/pdf", property = "typewriter.pdf.directory")
-    protected File pdfDirectory;
-
-    @Parameter(defaultValue = "main.md.ftl", property = "typewriter.source.file")
-    protected String sourceFile;
-
-    @Parameter(readonly = true, defaultValue = "${project}")
-    protected MavenProject project;
+    @Parameter(property = "typewriter.locale")
+    private String locale;
 
     @Parameter(defaultValue = DEFAULT_SOURCE_ENCODING, property = "typewriter.source.encoding")
     private String sourceEncoding;
 
-    public String getSourceEncoding() {
+    @Parameter(readonly = true, defaultValue = "${project}")
+    private MavenProject project;
+
+    @Parameter(defaultValue = "false", property = "typewriter.debug")
+    protected boolean debug;
+
+    @Override
+    public File freemarkerIncludeDirectory() {
+        return freemarkerIncludeDirectory;
+    }
+
+    @Override
+    public PlexusConfiguration dataModel() {
+        return dataModel;
+    }
+
+    @Override
+    public Map<String, String> customConfiguration() {
+        return customConfiguration;
+    }
+
+    @Override
+    public Locale getLocale() {
+
+        if (Strings.isNullOrEmpty(locale)) {
+
+            return Locale.getDefault();
+        }
+
+        return Locale.forLanguageTag(locale);
+    }
+
+    @Override
+    public Charset getSourceEncoding() {
 
         if (StringUtils.isBlank(sourceEncoding) || sourceEncoding.equals(DEFAULT_SOURCE_ENCODING)) {
 
-            return "UTF-8";
+            return StandardCharsets.UTF_8;
         }
 
-        return sourceEncoding;
+        return Charset.forName(sourceEncoding);
     }
 
-    public Charset getSourceCharset() {
-
-        return Charset.forName(getSourceEncoding());
-    }
-
-    protected Path getFontPath() {
-
-        if (SystemUtils.IS_OS_WINDOWS) {
-
-            return new File("c:\\Windows\\Fonts").toPath();
-        }
-
-        return new File("/usr/share/fonts/truetype/").toPath();
+    @Override
+    public MavenProject getProject() {
+        return project;
     }
 }

@@ -11,20 +11,21 @@ import io.github.miracelwhipp.typewriter.spi.EvaluationParameters;
 import io.github.miracelwhipp.typewriter.spi.Monitor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class TitleMonitor implements Monitor {
+public class HeadMonitor implements Monitor {
 
-    private String title = "    ";
+    private final List<String> headContent = new ArrayList<>();
 
     @Override
     public Object newSensor() {
-
         return new TemplateDirectiveModel() {
 
             @Override
@@ -34,7 +35,7 @@ public class TitleMonitor implements Monitor {
 
                     body.render(writer);
 
-                    title = writer.toString();
+                    headContent.add(writer.toString());
                 }
             }
         };
@@ -47,7 +48,6 @@ public class TitleMonitor implements Monitor {
 
             @Override
             public List<String> elementNamesToConvert() {
-
                 return Collections.singletonList("head");
             }
 
@@ -56,27 +56,30 @@ public class TitleMonitor implements Monitor {
 
                 Document document = node.getOwnerDocument();
 
-                Element titleElement = document.createElement("title");
-                titleElement.setTextContent(title);
+                headContent.forEach(content -> {
 
-                node.appendChild(titleElement);
+                    Text text = document.createTextNode(content);
+
+                    node.appendChild(text);
+                });
 
                 return node;
             }
         };
     }
 
+
     public static class Provider implements DataModelProvider {
 
         @Override
         public String name() {
-            return "title";
+            return "head";
         }
 
         @Override
         public Object getDataModel(Map<String, String> customConfiguration, EvaluationParameters evaluationParameters) {
 
-            return new TitleMonitor();
+            return new HeadMonitor();
         }
     }
 }
